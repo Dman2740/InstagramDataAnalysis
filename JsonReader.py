@@ -15,9 +15,19 @@ CONFIG_PROPERTIES={}
 try:
     with open(JSON_CONFIG_FILE_PATH) as data_file:
         CONFIG_PROPERTIES=json.load(data_file)
+        data_serialized=json.dumps(CONFIG_PROPERTIES)
+        #Use dumps in order to convert the dictionary to a string
+        #for CONFIG_PROPERTIES in CONFIG_PROPERTIES.keys():
+         #   print(CONFIG_PROPERTIES)
+        shortcode="shortcode"
+        for shortcode in CONFIG_PROPERTIES:
+            print(shortcode)
         
 except IOError as e:
     print (e)
     print ('IOError:Unable to open JSON file')
     exit(1)
 print (CONFIG_PROPERTIES)
+print (data_serialized)
+print (type(CONFIG_PROPERTIES))
+print (type(data_serialized))
