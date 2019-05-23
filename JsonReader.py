@@ -30,12 +30,14 @@ try:
         uClient.close()
         #We need to parse the html
         page_soup=soup(page_html,"html.parser")
-        #Grab the profile
-        profile=page_soup.find("main",{"role":"main"})
-        print(profile)
-        
-                
-        
+        profile=page_soup.find("script",type="application/ld+json")
+        stringProfile=profile.string
+        #Converts the html tag to a type of dictionary 
+        dictProfile=json.loads(stringProfile)
+        #This will grap the profileurl
+        profileName=dictProfile['author']['mainEntityofPage']
+        profileLink=profileName['@id']
+        webbrowser.open(profileLink,new=new)
         
         
 except IOError as e:
