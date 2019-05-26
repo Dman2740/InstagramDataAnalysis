@@ -45,8 +45,12 @@ try:
         #Print out the html of the user profile
         profilePage_soup=soup(profilePageHtml,"html.parser")
         #I am grabbing the meta data from the user profile
-        for tags in profilePage_soup.find_all('meta'):
-            print(tags.get('content'))
+        metaTitle=profilePage_soup.find('meta',property='og:title')
+        metaDescript=profilePage_soup.find('meta',property='og:description')
+        metaUrl=profilePage_soup.find('meta',property='og:url')
+        print(metaTitle.get('content'))
+        print(metaDescript.get('content'))
+        print(metaUrl.get('content'))
         
 except IOError as e:
     print (e)
