@@ -1,13 +1,15 @@
 #import packages
 import json
 import os
+import string
 import webbrowser
+import string
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
-new=2;
+new=2
 url="http://www.instagram.com/p/"
-
+url2="http://www.instagram.com/"
 #See where the json file is and we use the system call because it is more efficient
 CWD=os.getcwd()
 JSON_CONFIG_FILE_PATH='%s/%s' % (CWD,'2013-04-10_23-53-22_UTC.json')
@@ -23,21 +25,26 @@ try:
         CONFIG_PROPERTIES=json.load(data_file)
         shortcode=(CONFIG_PROPERTIES['node']['shortcode'])
         newUrl=url+shortcode
-        webbrowser.open(newUrl,new=new)
+        #webbrowser.open(newUrl,new=new)
         #Open Connection and grabbing the page and then we store it
         uClient=uReq(newUrl)
         page_html=uClient.read()
         uClient.close()
         #We need to parse the html
         page_soup=soup(page_html,"html.parser")
-        profile=page_soup.find("script",type="application/ld+json")
-        stringProfile=profile.string
-        #Converts the html tag to a type of dictionary 
-        dictProfile=json.loads(stringProfile)
-        #This will grap the profileurl
-        profileName=dictProfile['author']['mainEntityofPage']
-        profileLink=profileName['@id']
-        webbrowser.open(profileLink,new=new)
+        post=page_soup.find('meta',attrs={'property':'og:description'})
+        text=post.get('content')
+        index=text.find('@')
+        str1=text[(index+1):len(text)]
+        stringy=str1.split(' ')
+        userProfile=stringy[0]
+        if((userProfile[-1]==")")):
+            newUser=userProfile[0:(len(userProfile)-1)]
+            profileLink=url2+newUser
+            webbrowser.open(profileLink,new=new)
+        else:
+            profileLink=url2+userProfile
+            webbrowser.open(profileLink,new=new)
         #Now i need to grab the html from the user profile 
         newRead=uReq(profileLink)
         profilePageHtml=newRead.read()
@@ -52,7 +59,7 @@ try:
         print(metaDescript.get('content'))
         print(metaUrl.get('content'))
         
-except IOError as e:
-    print (e)
+except IOError:
     print ("IOError:Unable to open JSON file")
     exit(1)
+
