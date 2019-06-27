@@ -1,13 +1,16 @@
 #import packages
 import json
+import csv
 import os
 import string
 import webbrowser
 import string
+import re
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
-
+csv_File="selfharm.csv"
+csv_Columns=["ID","Followers","Following","Posts","Url"]
 new=2
 url="http://www.instagram.com/p/"
 url2="http://www.instagram.com/"
@@ -42,10 +45,11 @@ for file in os.listdir(os.getcwd()):
                 if((userProfile[-1]==")")):
                     newUser=userProfile[0:(len(userProfile)-1)]
                     profileLink=url2+newUser
-                    webbrowser.open(profileLink,new=new)
+                    #webbrowser.open(profileLink,new=new)
                 else:
+                    newUser=userProfile
                     profileLink=url2+userProfile
-                    webbrowser.open(profileLink,new=new)
+                    #webbrowser.open(profileLink,new=new)
                 #Now i need to grab the html from the user profile 
                 newRead=uReq(profileLink)
                 profilePageHtml=newRead.read()
@@ -56,11 +60,19 @@ for file in os.listdir(os.getcwd()):
                 metaTitle=profilePage_soup.find('meta',property='og:title')
                 metaDescript=profilePage_soup.find('meta',property='og:description')
                 metaUrl=profilePage_soup.find('meta',property='og:url')
-                profTitle=metaTitle.get('content')
-                print(metaTitle.get('content'))
-                print(metaDescript.get('content'))
-                print(metaUrl.get('content'))
-            
+                #print(metaTitle.get('content'))
+                contentUser=(metaDescript.get('content'))
+                listValues=re.findall('\d+', contentUser)
+                if(len(listValues)>3):
+                    del listValues[3:len(listValues)]
+                listValues.insert(0,newUser)
+                listValues.append(profileLink)
+                dictList={i:listValues[i] for i in range(0,len(listValues))}
+            with open(csv_File,'w',newline='') as csvFile:
+                w=csv.writer(csvFile)
+                w.writerow(["ID","Followers","Following","Posts","URL"])
+                for i in range(0,len(dictList)):
+                    w.writerow(dictList.values())
         except IOError:
             print ("IOError:Unable to open JSON file")
             exit(1)
